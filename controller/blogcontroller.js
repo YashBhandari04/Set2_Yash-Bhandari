@@ -1,12 +1,6 @@
-import blog from "../model/userBlog.js"
-import cloudinary from "cloudinary";
-import dotenv from "dotenv";
+import Blog from "../model/userBlog.js"
+import cloudinary from "../config/cloudinary.js";
 
-cloudinary.v2.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET
-});
 
 export const createBlog = async(req, res) =>{
     try {
@@ -20,7 +14,7 @@ export const createBlog = async(req, res) =>{
             uploadedImage = await cloudinary.v2.uploader.upload(image,{folder: "blogs"});
         }
 
-        const blog = await blog.create({
+        const blog = await Blog.create({
             title,
             content,
             imageURL: uploadedImage.secure_url,
@@ -36,7 +30,7 @@ export const createBlog = async(req, res) =>{
 
 export const getBlog = async(req, res) =>{
     try {
-        const blog = await blog.findById(req.params.id).populate("authorId", "name, email");
+        const blog = await Blog.findById(req.params.id).populate("authorId", "name, email");
 
         if(!blog){
             return res.status(404).json({message: "Blog not found"});
